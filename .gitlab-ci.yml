@@ -1,0 +1,23 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == $CI_DEFAULT_BRANCH
+
+image: cirrusci/flutter:stable
+
+stages:
+  - Build Project
+
+before_script:
+  - flutter pub get
+  - flutter clean
+
+build_project:
+  stage: Build Project
+  script:
+    - flutter build apk --debug
+    - flutter build apk --release
+  artifacts:
+    paths:
+      - build/app/outputs/flutter-apk/app-debug.apk
+      - build/app/outputs/flutter-apk/app-release.apk
+    expire_in: 1 hour
