@@ -30,5 +30,3 @@ android_debug:
     paths:
       - build/app/outputs/flutter-apk/app-debug.apk
     expire_in: 1 week
-  tags:
-    - docker
