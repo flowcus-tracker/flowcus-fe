@@ -1,4 +1,4 @@
-image: debian:stable
+image: mobiledevops/flutter-sdk-image:1.22.5
 
 variables:
   OUTPUT_DIR: "build/app/outputs/flutter-apk"
@@ -6,13 +6,10 @@ variables:
 stages:
   - build
 
-flutter_build:
+release_build:
   stage: build
-  image: mobiledevops/flutter-sdk-image:latest
-  before_script:
-    - flutter --version
-    - if [ -f "android/gradlew" ]; then chmod +x android/gradlew; fi
-    - flutter pub get
+  tags:
+    - shared
   script:
     - flutter build apk --release --split-per-abi
   artifacts:
@@ -20,11 +17,3 @@ flutter_build:
       - $OUTPUT_DIR/app-armeabi-v7a-release.apk
       - $OUTPUT_DIR/app-arm64-v8a-release.apk
       - $OUTPUT_DIR/app-x86_64-release.apk
-    expire_in: 1 week
-  cache:
-    key: ${CI_COMMIT_REF_SLUG}
-    paths:
-      - .pub-cache/
-      - .gradle/
-      - .dart_tool/
-      - build/
