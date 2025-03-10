@@ -1,17 +1,9 @@
 image: mobiledevops/flutter-sdk-image:1.22.5
 
-variables:
-  OUTPUT_DIR: "build/app/outputs/flutter-apk"
-
 stages:
-  - build
+    - build
 
 release_build:
-  stage: build
-  script:
-    - flutter build apk --release --split-per-abi
-  artifacts:
-    paths:
-      - $OUTPUT_DIR/app-armeabi-v7a-release.apk
-      - $OUTPUT_DIR/app-arm64-v8a-release.apk
-      - $OUTPUT_DIR/app-x86_64-release.apk
+    stage: build
+    script:
+        - flutter build apk
