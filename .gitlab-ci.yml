@@ -8,8 +8,6 @@ stages:
 
 release_build:
   stage: build
-  tags:
-    - shared
   script:
     - flutter build apk --release --split-per-abi
   artifacts:
