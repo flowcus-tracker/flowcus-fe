@@ -1,4 +1,4 @@
-image: cirrusci/flutter:stable
+image: flutter:stable
 
 variables:
   PUB_CACHE: "/root/.pub-cache"
@@ -16,7 +16,7 @@ stages:
 
 before_script:
   - flutter pub get
-  - yes | sdkmanager --licenses >/dev/null
+  - yes | sdkmanager --licenses || true
   - flutter doctor
 
 build_debug_apk:
