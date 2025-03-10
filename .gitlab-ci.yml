@@ -19,7 +19,6 @@ flutter_build:
   stage: build
   before_script:
     - flutter --version
-    - chmod +x android/gradlew
     - flutter pub get
     - flutter config --no-analytics
   script:
