@@ -9,20 +9,36 @@ variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2048m"
   # Define cache locations
   PUB_CACHE: "$CI_PROJECT_DIR/.pub-cache"
+  # Define Flutter version
+  FLUTTER_VERSION: "3.19.2"
   
 # Optimize cache to speed up builds
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
+  key: ${CI_COMMIT_REF_SLUG}-flutter-${FLUTTER_VERSION}
   paths:
     - .pub-cache/
     - build/
     - .gradle/
     - .dart_tool/
     - android/.gradle/
+    - flutter/  # Cache the Flutter SDK
 
 build_debug_apk:
   stage: build
   before_script:
+    # Install required dependencies
+    - apt-get update -y && apt-get install -y curl git unzip xz-utils zip
+
+    # Download and setup Flutter
+    - if [ ! -d "flutter" ]; then
+        curl -o flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz &&
+        tar xf flutter.tar.xz &&
+        rm flutter.tar.xz;
+      fi
+    
+    # Add flutter to PATH
+    - export PATH="$PATH:$CI_PROJECT_DIR/flutter/bin"
+    
     # Display environment information for debugging
     - flutter --version
     - java -version
