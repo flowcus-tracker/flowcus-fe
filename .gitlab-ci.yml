@@ -1,15 +1,10 @@
-image: ghcr.io/cirruslabs/flutter:stable
-
+image: mobiledevops/flutter-sdk-image:latest
 variables:
-  # Use this to control the output directory for the apk
   OUTPUT_DIR: "build/app/outputs/flutter-apk"
-  # We can use this to specify the Flutter version if needed
-  FLUTTER_VERSION: "stable"
 
 stages:
   - build
 
-# Cache Flutter dependencies to speed up builds
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
@@ -20,23 +15,16 @@ cache:
     - $HOME/.pub-cache/
     - $HOME/.gradle/
 
-# Main job to build the APK
 flutter_build:
   stage: build
   before_script:
-    # Display Flutter and Dart versions for debugging
     - flutter --version
-    # Make sure the Gradle wrapper is executable
     - chmod +x android/gradlew
-    # Pre-download dependencies to avoid timeouts
     - flutter pub get
-    # Configure Flutter for production build
     - flutter config --no-analytics
   script:
-    # Build the APK (--split-per-abi reduces build time)
     - flutter build apk --release --split-per-abi
   after_script:
-    # Clean up unused files to reduce cache size
     - rm -rf $HOME/.gradle/daemon/
     - rm -rf .gradle/daemon/
   artifacts:
