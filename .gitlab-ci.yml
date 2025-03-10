@@ -1,10 +1,12 @@
 image: mobiledevops/flutter-sdk-image:latest
+
 variables:
   OUTPUT_DIR: "build/app/outputs/flutter-apk"
 
 stages:
   - build
 
+# Cache Flutter dependencies to speed up builds
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
@@ -12,20 +14,15 @@ cache:
     - .gradle/
     - .dart_tool/
     - build/
-    - $HOME/.pub-cache/
-    - $HOME/.gradle/
 
 flutter_build:
   stage: build
   before_script:
     - flutter --version
+    - if [ -f "android/gradlew" ]; then chmod +x android/gradlew; fi
     - flutter pub get
-    - flutter config --no-analytics
   script:
     - flutter build apk --release --split-per-abi
-  after_script:
-    - rm -rf $HOME/.gradle/daemon/
-    - rm -rf .gradle/daemon/
   artifacts:
     paths:
       - $OUTPUT_DIR/app-armeabi-v7a-release.apk
