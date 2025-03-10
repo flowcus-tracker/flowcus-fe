@@ -1,25 +1,29 @@
-workflow:
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == $CI_DEFAULT_BRANCH
+image: cirrusci/flutter:stable
 
-image:
-  name: cirrusci/flutter:stable
-  entrypoint: ["/bin/sh", "-c"]
+variables:
+  PUB_CACHE: "/root/.pub-cache"
+
+cache:
+  key: ${CI_PROJECT_ID}
+  paths:
+    - .pub-cache/
+    - .flutter-plugins
+    - .flutter-plugins-dependencies
+    - pubspec.lock
 
 stages:
-  - Build Project
+  - build
 
 before_script:
   - flutter pub get
-  - flutter clean
+  - yes | sdkmanager --licenses >/dev/null
+  - flutter doctor
 
-build_project:
-  stage: Build Project
+build_debug_apk:
+  stage: build
   script:
     - flutter build apk --debug
-    - flutter build apk --release
   artifacts:
     paths:
-      - build/app/outputs/flutter-apk/app-debug.apk
-      - build/app/outputs/flutter-apk/app-release.apk
-    expire_in: 1 hour
+      - build/app/outputs/apk/debug/app-debug.apk
+    expire_in: 1 week
