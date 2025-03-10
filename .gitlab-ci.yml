@@ -1,29 +1,40 @@
-image: flutter:stable
+# Use the official Flutter Docker image
+image: cirrusci/flutter:stable
 
-variables:
-  PUB_CACHE: "/root/.pub-cache"
-
+# Cache dependencies between builds
 cache:
-  key: ${CI_PROJECT_ID}
   paths:
     - .pub-cache/
-    - .flutter-plugins
-    - .flutter-plugins-dependencies
-    - pubspec.lock
+    - .dart_tool/
+    - build/
+    - .gradle/
 
 stages:
   - build
 
-before_script:
-  - flutter pub get
-  - yes | sdkmanager --licenses || true
-  - flutter doctor
+variables:
+  # Avoid downloading the Gradle wrapper again
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.caching=true"
 
-build_debug_apk:
+before_script:
+  # Make sure we have the latest dependencies
+  - flutter pub get
+  # Show Flutter version for debugging purposes
+  - flutter --version
+
+build_android_debug:
   stage: build
   script:
+    # Build debug APK
     - flutter build apk --debug
   artifacts:
     paths:
-      - build/app/outputs/apk/debug/app-debug.apk
+      - build/app/outputs/flutter-apk/app-debug.apk
     expire_in: 1 week
+  # Trigger this job only for changes to these directories
+  only:
+    changes:
+      - lib/**/*
+      - pubspec.yaml
+      - android/**/*
+      - .gitlab-ci.yml
