@@ -1,29 +1,28 @@
-# Use the official Flutter Docker image
-image: cirrusci/flutter:stable
+# Use Google's official Flutter Docker image
+image: ghcr.io/cirruslabs/flutter:stable
 
-# Cache dependencies between builds
+stages:
+  - build
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+# Define cache to speed up builds
 cache:
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .pub-cache/
     - .dart_tool/
     - build/
     - .gradle/
 
-stages:
-  - build
-
-variables:
-  # Avoid downloading the Gradle wrapper again
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.caching=true"
-
-before_script:
-  # Make sure we have the latest dependencies
-  - flutter pub get
-  # Show Flutter version for debugging purposes
-  - flutter --version
-
-build_android_debug:
+android_debug:
   stage: build
+  before_script:
+    # Show Flutter version for debugging purposes
+    - flutter --version
+    # Make sure we have the latest dependencies
+    - flutter pub get
   script:
     # Build debug APK
     - flutter build apk --debug
@@ -31,10 +30,5 @@ build_android_debug:
     paths:
       - build/app/outputs/flutter-apk/app-debug.apk
     expire_in: 1 week
-  # Trigger this job only for changes to these directories
-  only:
-    changes:
-      - lib/**/*
-      - pubspec.yaml
-      - android/**/*
-      - .gitlab-ci.yml
+  tags:
+    - docker
