@@ -1,5 +1,5 @@
 # Use Google's official Flutter Docker image
-image: ghcr.io/cirruslabs/flutter:stable
+image: ghcr.io/cirruslabs/android-sdk:30
 
 stages:
   - build
