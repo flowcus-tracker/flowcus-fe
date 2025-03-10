@@ -1,4 +1,4 @@
-image: mobiledevops/flutter-sdk-image:latest
+image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
 
 variables:
   OUTPUT_DIR: "build/app/outputs/flutter-apk"
@@ -6,17 +6,9 @@ variables:
 stages:
   - build
 
-# Cache Flutter dependencies to speed up builds
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - .pub-cache/
-    - .gradle/
-    - .dart_tool/
-    - build/
-
 flutter_build:
   stage: build
+  image: mobiledevops/flutter-sdk-image:latest
   before_script:
     - flutter --version
     - if [ -f "android/gradlew" ]; then chmod +x android/gradlew; fi
@@ -29,3 +21,10 @@ flutter_build:
       - $OUTPUT_DIR/app-arm64-v8a-release.apk
       - $OUTPUT_DIR/app-x86_64-release.apk
     expire_in: 1 week
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .pub-cache/
+      - .gradle/
+      - .dart_tool/
+      - build/
