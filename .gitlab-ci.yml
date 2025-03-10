@@ -5,7 +5,12 @@ stages:
   - build
 
 variables:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx1536m"
+  ANDROID_HOME: "/opt/android-sdk-linux"
+  # Pre-accept Android licenses
+  ANDROID_LICENSES: "yes | sdkmanager --licenses"
+  # Flutter directory for caching
+  PUB_CACHE: "$CI_PROJECT_DIR/.pub-cache"
 
 # Define cache to speed up builds
 cache:
@@ -15,17 +20,33 @@ cache:
     - .dart_tool/
     - build/
     - .gradle/
+    - .android/
 
 android_debug:
   stage: build
   before_script:
-    # Show Flutter version for debugging purposes
+    # Accept Android licenses ahead of time
+    - mkdir -p $ANDROID_HOME/licenses
+    - echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
+    - echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> $ANDROID_HOME/licenses/android-sdk-license
+    - echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" >> $ANDROID_HOME/licenses/android-sdk-license
+    
+    # Show Flutter and Java versions
     - flutter --version
-    # Make sure we have the latest dependencies
+    - java -version
+    
+    # Install dependencies
     - flutter pub get
+    
+    # Make gradle executable - sometimes needed
+    - if [ -f "android/gradlew" ]; then chmod +x android/gradlew; fi
+  
   script:
-    # Build debug APK
-    - flutter build apk --debug
+    # Clean before building to avoid any cached issues
+    - flutter clean
+    # Build debug APK with specific config to avoid NDK issues
+    - flutter build apk --debug --no-tree-shake-icons
+  
   artifacts:
     paths:
       - build/app/outputs/flutter-apk/app-debug.apk
