@@ -1,53 +1,47 @@
-# Use Google's official Flutter Docker image
-image: ghcr.io/cirruslabs/android-sdk:30
+# Use Cirrus Labs' Android SDK Docker image version 35
+image: ghcr.io/cirruslabs/android-sdk:35
 
 stages:
   - build
 
 variables:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx1536m"
-  ANDROID_HOME: "/opt/android-sdk-linux"
-  # Pre-accept Android licenses
-  ANDROID_LICENSES: "yes | sdkmanager --licenses"
-  # Flutter directory for caching
+  # Disable Gradle daemon for CI environment
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2048m"
+  # Define cache locations
   PUB_CACHE: "$CI_PROJECT_DIR/.pub-cache"
-
-# Define cache to speed up builds
+  
+# Optimize cache to speed up builds
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .pub-cache/
-    - .dart_tool/
     - build/
     - .gradle/
-    - .android/
+    - .dart_tool/
+    - android/.gradle/
 
-android_debug:
+build_debug_apk:
   stage: build
   before_script:
-    # Accept Android licenses ahead of time
-    - mkdir -p $ANDROID_HOME/licenses
-    - echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
-    - echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> $ANDROID_HOME/licenses/android-sdk-license
-    - echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" >> $ANDROID_HOME/licenses/android-sdk-license
-    
-    # Show Flutter and Java versions
+    # Display environment information for debugging
     - flutter --version
     - java -version
     
-    # Install dependencies
+    # Install Flutter dependencies
     - flutter pub get
     
-    # Make gradle executable - sometimes needed
-    - if [ -f "android/gradlew" ]; then chmod +x android/gradlew; fi
-  
+    # Ensure gradlew is executable
+    - chmod +x android/gradlew
+    
   script:
-    # Clean before building to avoid any cached issues
+    # Clean build to avoid cached issues
     - flutter clean
-    # Build debug APK with specific config to avoid NDK issues
-    - flutter build apk --debug --no-tree-shake-icons
-  
+    
+    # Build debug APK (no tree shaking for faster builds)
+    - flutter build apk --debug
+    
   artifacts:
+    name: "debug-apk-${CI_COMMIT_SHORT_SHA}"
     paths:
       - build/app/outputs/flutter-apk/app-debug.apk
-    expire_in: 1 week
+    expire_in: 2 weeks
