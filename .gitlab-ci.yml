@@ -1,63 +1,47 @@
-# Use Cirrus Labs' Android SDK Docker image version 35
-image: ghcr.io/cirruslabs/android-sdk:35
+image: ghcr.io/cirruslabs/flutter:stable
+
+variables:
+  # Use this to control the output directory for the apk
+  OUTPUT_DIR: "build/app/outputs/flutter-apk"
+  # We can use this to specify the Flutter version if needed
+  FLUTTER_VERSION: "stable"
 
 stages:
   - build
 
-variables:
-  # Disable Gradle daemon for CI environment
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2048m"
-  # Define cache locations
-  PUB_CACHE: "$CI_PROJECT_DIR/.pub-cache"
-  # Define Flutter version
-  FLUTTER_VERSION: "3.19.2"
-  
-# Optimize cache to speed up builds
+# Cache Flutter dependencies to speed up builds
 cache:
-  key: ${CI_COMMIT_REF_SLUG}-flutter-${FLUTTER_VERSION}
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .pub-cache/
-    - build/
     - .gradle/
     - .dart_tool/
-    - android/.gradle/
-    - flutter/  # Cache the Flutter SDK
+    - build/
+    - $HOME/.pub-cache/
+    - $HOME/.gradle/
 
-build_debug_apk:
+# Main job to build the APK
+flutter_build:
   stage: build
   before_script:
-    # Install required dependencies
-    - apt-get update -y && apt-get install -y curl git unzip xz-utils zip
-
-    # Download and setup Flutter
-    - if [ ! -d "flutter" ]; then
-        curl -o flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz &&
-        tar xf flutter.tar.xz &&
-        rm flutter.tar.xz;
-      fi
-    
-    # Add flutter to PATH
-    - export PATH="$PATH:$CI_PROJECT_DIR/flutter/bin"
-    
-    # Display environment information for debugging
+    # Display Flutter and Dart versions for debugging
     - flutter --version
-    - java -version
-    
-    # Install Flutter dependencies
-    - flutter pub get
-    
-    # Ensure gradlew is executable
+    # Make sure the Gradle wrapper is executable
     - chmod +x android/gradlew
-    
+    # Pre-download dependencies to avoid timeouts
+    - flutter pub get
+    # Configure Flutter for production build
+    - flutter config --no-analytics
   script:
-    # Clean build to avoid cached issues
-    - flutter clean
-    
-    # Build debug APK (no tree shaking for faster builds)
-    - flutter build apk --debug
-    
+    # Build the APK (--split-per-abi reduces build time)
+    - flutter build apk --release --split-per-abi
+  after_script:
+    # Clean up unused files to reduce cache size
+    - rm -rf $HOME/.gradle/daemon/
+    - rm -rf .gradle/daemon/
   artifacts:
-    name: "debug-apk-${CI_COMMIT_SHORT_SHA}"
     paths:
-      - build/app/outputs/flutter-apk/app-debug.apk
-    expire_in: 2 weeks
+      - $OUTPUT_DIR/app-armeabi-v7a-release.apk
+      - $OUTPUT_DIR/app-arm64-v8a-release.apk
+      - $OUTPUT_DIR/app-x86_64-release.apk
+    expire_in: 1 week
