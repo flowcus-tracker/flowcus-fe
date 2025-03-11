@@ -1,13 +1,11 @@
 image: ghcr.io/cirruslabs/flutter:stable
 
-stages:
-  - build
-
-variables:
-  PUB_CACHE: "/root/.pub-cache"
-  GRADLE_USER_HOME: "/root/.gradle"
-  ANDROID_SDK_ROOT: "/opt/android-sdk-linux"
-  ANDROID_NDK_HOME: "/opt/android-sdk-linux/ndk"
+before_script:
+  # Make sure Flutter is properly configured for the environment
+  - flutter config --no-analytics
+  - flutter doctor -v
+  # Explicitly download and configure gen_snapshot tools
+  - flutter precache --android
 
 cache:
   paths:
@@ -17,29 +15,23 @@ cache:
     # Gradle cache
     - /root/.gradle/caches/
     - /root/.gradle/wrapper/
-    - .gradle/
     - android/.gradle/
-    # Android SDK/NDK components that might be downloaded during build
+    # Android SDK/NDK components
     - /opt/android-sdk-linux/ndk/
     - /opt/android-sdk-linux/build-tools/
     - /opt/android-sdk-linux/platforms/
-    # Build artifacts
-    - build/
+    # Flutter engine artifacts cache
+    - /sdks/flutter/bin/cache/artifacts/engine/
 
 build_apk:
   stage: build
   script:
-    # Accept Android licenses before building
-    - yes | flutter doctor --android-licenses || true
-    # Get Flutter dependencies
     - flutter pub get
-    # Build the APK using NDK with split-per-abi flag
-    - flutter build apk --release --split-per-abi
+    # Build a regular APK instead of split APKs to avoid architecture issues
+    - flutter build apk --release
   artifacts:
     paths:
-      # Include all the split APKs
-      - build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-      - build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-      - build/app/outputs/flutter-apk/app-x86_64-release.apk
+      - build/app/outputs/flutter-apk/app-release.apk
     expire_in: 1 week
-    name: "app-release-${CI_COMMIT_SHORT_SHA}"
+  # Add retry in case of transient failures
+  retry: 1
