@@ -1,37 +1,17 @@
 image: ghcr.io/cirruslabs/flutter:stable
 
-before_script:
-  # Make sure Flutter is properly configured for the environment
-  - flutter config --no-analytics
-  - flutter doctor -v
-  # Explicitly download and configure gen_snapshot tools
-  - flutter precache --android
-
 cache:
   paths:
-    # Flutter and Dart cache
-    - /root/.pub-cache/
     - .dart_tool/
-    # Gradle cache
-    - /root/.gradle/caches/
-    - /root/.gradle/wrapper/
+    - .pub-cache/
     - android/.gradle/
-    # Android SDK/NDK components
-    - /opt/android-sdk-linux/ndk/
-    - /opt/android-sdk-linux/build-tools/
-    - /opt/android-sdk-linux/platforms/
-    # Flutter engine artifacts cache
-    - /sdks/flutter/bin/cache/artifacts/engine/
 
 build_apk:
   stage: build
   script:
     - flutter pub get
-    # Build a regular APK instead of split APKs to avoid architecture issues
-    - flutter build apk --release
+    - flutter build apk --debug  # Note: this builds a debug version, not suitable for production
   artifacts:
     paths:
-      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/apk/debug/app-debug.apk
     expire_in: 1 week
-  # Add retry in case of transient failures
-  retry: 1
