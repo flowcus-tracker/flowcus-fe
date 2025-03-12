@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 
-// ignore: use_key_in_widget_constructors
+enum Phase { focus, shortBreak, longBreak }
+
 class TimerPage extends StatefulWidget {
+  const TimerPage({super.key});
+
   @override
   _TimerPageState createState() => _TimerPageState();
 }
@@ -21,36 +24,90 @@ class _TimerPageState extends State<TimerPage> {
   DateTime? endTime;
   final int totalFocusTime = 1500;
 
+  Phase currentPhase = Phase.focus;
+  int completedSessions = 0;
+  final int sessionsBeforeLongBreak = 4;
+  final int shortBreakDuration = 300; // 5 minutes
+  final int longBreakDuration = 900; // 15 minutes
+
   @override
   void dispose() {
     timer?.cancel();
     super.dispose();
   }
 
+  int get currentPhaseDuration {
+    switch (currentPhase) {
+      case Phase.focus:
+        return totalFocusTime;
+      case Phase.shortBreak:
+        return shortBreakDuration;
+      case Phase.longBreak:
+        return longBreakDuration;
+    }
+  }
+
+  String _getPhaseName(Phase phase) {
+    switch (phase) {
+      case Phase.focus:
+        return 'Focus';
+      case Phase.shortBreak:
+        return 'Short Break';
+      case Phase.longBreak:
+        return 'Long Break';
+    }
+  }
+
   void _startTimer() {
     if (!isTimerRunning) {
-      if (remainingSeconds == totalFocusTime || remainingSeconds == 0) {
+      if (remainingSeconds == currentPhaseDuration) {
         setState(() {
-          sessionCount++;
           startTime = DateTime.now();
           endTime = null;
-          if (remainingSeconds == 0) {
-            remainingSeconds = totalFocusTime;
+          if (currentPhase == Phase.focus) {
+            sessionCount++;
           }
         });
       }
 
-      timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (remainingSeconds > 0) {
           setState(() {
             remainingSeconds--;
           });
         } else {
           timer.cancel();
+          DateTime now = DateTime.now();
           setState(() {
             isTimerRunning = false;
-            endTime = DateTime.now();
+            endTime = now;
+            if (currentPhase == Phase.focus) {
+              completedSessions++;
+            }
           });
+
+          Phase nextPhase;
+          int nextRemainingSeconds;
+
+          if (currentPhase == Phase.focus) {
+            if (completedSessions % sessionsBeforeLongBreak == 0) {
+              nextPhase = Phase.longBreak;
+              nextRemainingSeconds = longBreakDuration;
+            } else {
+              nextPhase = Phase.shortBreak;
+              nextRemainingSeconds = shortBreakDuration;
+            }
+          } else {
+            nextPhase = Phase.focus;
+            nextRemainingSeconds = totalFocusTime;
+          }
+
+          setState(() {
+            currentPhase = nextPhase;
+            remainingSeconds = nextRemainingSeconds;
+          });
+
+          _startTimer();
         }
       });
 
@@ -71,6 +128,7 @@ class _TimerPageState extends State<TimerPage> {
     timer?.cancel();
     setState(() {
       isTimerRunning = false;
+      currentPhase = Phase.focus;
       remainingSeconds = totalFocusTime;
       endTime = DateTime.now();
     });
@@ -110,7 +168,8 @@ class _TimerPageState extends State<TimerPage> {
             Text('Session $sessionCount',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
             const SizedBox(height: 10),
-            Text('${_formatTime(totalFocusTime)} - Focus',
+            Text(
+                '${_formatTime(currentPhaseDuration)} - ${_getPhaseName(currentPhase)}',
                 style: TextStyle(color: Colors.blue)),
             const SizedBox(height: 20),
             SizedBox(
@@ -120,7 +179,8 @@ class _TimerPageState extends State<TimerPage> {
                 alignment: Alignment.center,
                 children: [
                   CircularProgressIndicator(
-                    value: (totalFocusTime - remainingSeconds) / totalFocusTime,
+                    value: (currentPhaseDuration - remainingSeconds) /
+                        currentPhaseDuration,
                     strokeWidth: 8,
                     backgroundColor: Colors.grey[200],
                     valueColor:
@@ -128,6 +188,8 @@ class _TimerPageState extends State<TimerPage> {
                   ),
                   Text(
                     _formatTime(remainingSeconds),
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.bold),
                   )
                 ],
               ),

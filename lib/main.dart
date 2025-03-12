@@ -1,7 +1,9 @@
 // main.dart
 import 'package:flowcus_fe/pages/calendar_page.dart';
+import 'package:flowcus_fe/pages/leaderboard_page.dart';
 import 'package:flowcus_fe/pages/report_page.dart';
 import 'package:flowcus_fe/pages/task_page.dart';
+
 import 'package:flutter/material.dart';
 // ignore: unused_import
 import 'pages/timer_page.dart';
@@ -26,7 +28,10 @@ class MyApp extends StatelessWidget {
 }
 
 class MainLayout extends StatefulWidget {
+  const MainLayout({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _MainLayoutState createState() => _MainLayoutState();
 }
 
@@ -59,12 +64,5 @@ class _MainLayoutState extends State<MainLayout> {
         ],
       ),
     );
-  }
-}
-
-class LeaderboardPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(); // Add your leaderboard content here
   }
 }
