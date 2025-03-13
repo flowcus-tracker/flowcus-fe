@@ -41,6 +41,12 @@ jobs:
         # ^ If you want to use a specific version of flutter
 
       # Create android apk
-      - name: Build apk
+      - name: Build APK
         run: flutter build apk
+
+      - name: 'Upload APK'
+        uses: 'actions/upload-artifact@v2'
+        with:
+          name: 'Built APK'
+          path: 'build/app/outputs/flutter-apk/app-release.apk'
         
