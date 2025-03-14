@@ -1,6 +1,5 @@
-# Flowcus Frontend in Flutter
-
-Current State: Unstable
+# Contribution
+Please see the wiki for guidelines.
 
 # Introduction
 
