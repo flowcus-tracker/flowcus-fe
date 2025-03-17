@@ -229,7 +229,7 @@ class _TimerPageState extends State<TimerPage> {
                   Icons.stop,
                   Colors.red,
                   onPressed: _stopTimer,
-                  isEnabled: true,
+                  isEnabled: isTimerRunning,
                 ),
               ],
             ),
