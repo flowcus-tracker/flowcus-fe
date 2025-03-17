@@ -20,6 +20,8 @@ jobs:
 
       # Clones the project on the machine
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for proper versioning
 
       # Sets up java 11
       - uses: actions/setup-java@v4
@@ -49,3 +51,36 @@ jobs:
         with:
           name: app-release
           path: build/app/outputs/flutter-apk/app-release.apk
+      
+      # Generate release timestamp
+      - name: Generate timestamp
+        id: timestamp
+        run: echo "timestamp=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+        
+      # Create GitHub Release (only on push to main, not on PR)
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "ALPHA v0.1-${{ steps.timestamp.outputs.timestamp }}"
+          tag_name: "v0.1-${{ steps.timestamp.outputs.timestamp }}"
+          prerelease: true
+          draft: false
+          files: build/app/outputs/flutter-apk/app-release.apk
+          body: |
+            ### ⚠️ EARLY DEVELOPMENT STAGE ⚠️
+            
+            This is an automatically generated alpha release from the latest commit.
+            
+            **Warning**: This code is in VERY EARLY STAGES of development and not suitable for production use.
+            
+            ### Changes in this build:
+            - Latest changes from commit: ${{ github.sha }}
+            - Build timestamp: ${{ steps.timestamp.outputs.timestamp }}
+            
+            ### Known limitations:
+            - This is an experimental build with limited testing
+            - Features may be incomplete or non-functional
+            - Use at your own risk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
