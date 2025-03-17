@@ -19,7 +19,7 @@ class _TimerPageState extends State<TimerPage> {
   Timer? timer;
   int remainingSeconds = 1500; // 25 minutes
   bool isTimerRunning = false;
-  int sessionCount = 0;
+  int sessionCount = 1;
   DateTime? startTime;
   DateTime? endTime;
   final int totalFocusTime = 1500;
@@ -162,7 +162,7 @@ class _TimerPageState extends State<TimerPage> {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(30.0),
         child: Column(
           children: [
             Text('Session $sessionCount',
@@ -173,24 +173,36 @@ class _TimerPageState extends State<TimerPage> {
                 style: TextStyle(color: Colors.blue)),
             const SizedBox(height: 20),
             SizedBox(
-              width: 200,
-              height: 200,
+              width: 250,
+              height: 220,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  CircularProgressIndicator(
-                    value: (currentPhaseDuration - remainingSeconds) /
-                        currentPhaseDuration,
-                    strokeWidth: 8,
-                    backgroundColor: Colors.grey[200],
-                    valueColor:
-                        const AlwaysStoppedAnimation<Color>(Colors.blue),
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: SizedBox(
+                      width: 170, // Adjust the width to increase the size
+                      height: 170, // Adjust the height to increase the size
+                      child: CircularProgressIndicator(
+                        value: (currentPhaseDuration - remainingSeconds) /
+                            currentPhaseDuration,
+                        strokeWidth: 10,
+                        backgroundColor: Colors.grey[200],
+                        valueColor:
+                            const AlwaysStoppedAnimation<Color>(Colors.blue),
+                      ),
+                    ),
                   ),
-                  Text(
-                    _formatTime(remainingSeconds),
-                    style: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold),
-                  )
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      _formatTime(remainingSeconds),
+                      style: const TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -217,7 +229,7 @@ class _TimerPageState extends State<TimerPage> {
                   Icons.stop,
                   Colors.red,
                   onPressed: _stopTimer,
-                  isEnabled: true,
+                  isEnabled: isTimerRunning,
                 ),
               ],
             ),
@@ -226,9 +238,9 @@ class _TimerPageState extends State<TimerPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                    'Start Time: ${startTime != null ? DateFormat('h:mm:ss a').format(startTime!) : '--'}'),
+                    'Start Time: ${startTime != null ? DateFormat('h:mm:ss ').format(startTime!) : '--'}'),
                 Text(
-                    'End Time: ${endTime != null ? DateFormat('h:mm:ss a').format(endTime!) : '--'}'),
+                    'End Time: ${endTime != null ? DateFormat('h:mm:ss ').format(endTime!) : '--'}'),
               ],
             ),
           ],
