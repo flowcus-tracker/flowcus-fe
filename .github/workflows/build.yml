@@ -77,8 +77,6 @@ jobs:
             
             This is an automatically generated alpha release from the latest commit.
             
-            **Warning**: This code is in VERY EARLY STAGES of development and not suitable for production use.
-            
             ### Changes in this build:
             - Latest changes from commit: ${{ github.sha }}
             - Build timestamp: ${{ steps.timestamp.outputs.timestamp }}
