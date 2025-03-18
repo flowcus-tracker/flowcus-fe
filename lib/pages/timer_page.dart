@@ -1,10 +1,8 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'task_provider.dart'; // Ensure this import is correct
 
 enum Phase { focus, shortBreak, longBreak }
 
@@ -152,7 +150,7 @@ class _TimerPageState extends State<TimerPage> {
           const SizedBox(height: 20),
           _buildTimerSection(),
           const SizedBox(height: 30),
-          _buildPriorityTasks(),
+          _buildPriorityTasks(context),
         ],
       ),
     );
@@ -181,8 +179,8 @@ class _TimerPageState extends State<TimerPage> {
                   Padding(
                     padding: const EdgeInsets.all(5.0),
                     child: SizedBox(
-                      width: 170, // Adjust the width to increase the size
-                      height: 170, // Adjust the height to increase the size
+                      width: 170,
+                      height: 170,
                       child: CircularProgressIndicator(
                         value: (currentPhaseDuration - remainingSeconds) /
                             currentPhaseDuration,
@@ -273,7 +271,9 @@ class _TimerPageState extends State<TimerPage> {
     );
   }
 
-  Widget _buildPriorityTasks() {
+  Widget _buildPriorityTasks(BuildContext context) {
+    final taskProvider = Provider.of<TaskProvider>(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -282,11 +282,10 @@ class _TimerPageState extends State<TimerPage> {
         const SizedBox(height: 10),
         ListView.separated(
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: 3,
+          itemCount: taskProvider.tasks.length,
           separatorBuilder: (context, index) => const Divider(),
           itemBuilder: (context, index) => CheckboxListTile(
-            title: Text('Task ${index + 1}'),
+            title: Text(taskProvider.tasks[index]), // Use actual task text
             value: false,
             onChanged: (value) {},
           ),

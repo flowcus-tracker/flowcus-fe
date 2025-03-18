@@ -1,17 +1,23 @@
-// main.dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flowcus_fe/pages/calendar_page.dart';
 import 'package:flowcus_fe/pages/leaderboard_page.dart';
 import 'package:flowcus_fe/pages/report_page.dart';
 import 'package:flowcus_fe/pages/task_page.dart';
+import 'package:flowcus_fe/pages/timer_page.dart';
+import 'package:flowcus_fe/pages/task_provider.dart'
+    as provider; // Added prefix
 
-import 'package:flutter/material.dart';
-// ignore: unused_import
-import 'pages/timer_page.dart';
+void main() => runApp(
+      ChangeNotifierProvider(
+        create: (context) => provider.TaskProvider(),
+        child: MyApp(),
+      ),
+    );
 
-void main() => runApp(MyApp());
-
-// ignore: use_key_in_widget_constructors
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,7 +37,6 @@ class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _MainLayoutState createState() => _MainLayoutState();
 }
 
