@@ -143,13 +143,13 @@ class _TimerPageState extends State<TimerPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Text('Flow State Tracker',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  const Text('Flow State Tracker',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
                   _buildTimerSection(),
                   const SizedBox(height: 30),
                   _buildPriorityTasks(),
