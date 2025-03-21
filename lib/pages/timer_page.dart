@@ -138,26 +138,31 @@ class _TimerPageState extends State<TimerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Flow State Tracker',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildTimerSection(),
-                  const SizedBox(height: 30),
-                  _buildPriorityTasks(),
-                ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Flow State Tracker'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: 24.0
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 14),
+                    _buildTimerSection(),
+                    const SizedBox(height: 30),
+                    _buildPriorityTasks(),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
