@@ -237,15 +237,47 @@ class _TimerPageState extends State<TimerPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                    'Start Time: ${startTime != null ? DateFormat('h:mm:ss ').format(startTime!) : '--'}'),
-                Text(
-                    'End Time: ${endTime != null ? DateFormat('h:mm:ss ').format(endTime!) : '--'}'),
-              ],
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.play_circle_outline, color: Colors.blue, size: 20),
+                      const SizedBox(width: 6),
+                      Text(
+                        startTime != null
+                            ? DateFormat('HH:mm a').format(startTime!)
+                            : '--:--',
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    height: 24,
+                    width: 1,
+                    color: Colors.grey.shade300,
+                  ),
+                  Row(
+                    children: [
+                      const Icon(Icons.stop_circle_outlined, color: Colors.red, size: 20),
+                      const SizedBox(width: 6),
+                      Text(
+                        endTime != null
+                            ? DateFormat('HH:mm a').format(endTime!)
+                            : '--:--',
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
