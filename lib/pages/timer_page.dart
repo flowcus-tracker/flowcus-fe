@@ -140,18 +140,31 @@ class _TimerPageState extends State<TimerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Flow State Tracker',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
-          _buildTimerSection(),
-          const SizedBox(height: 30),
-          _buildPriorityTasks(context),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Flow State Tracker'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: 24.0
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 14),
+                    _buildTimerSection(),
+                    const SizedBox(height: 30),
+                    _buildPriorityTasks(context),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -160,19 +173,18 @@ class _TimerPageState extends State<TimerPage> {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
             Text('Session $sessionCount',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-            const SizedBox(height: 10),
             Text(
                 '${_formatTime(currentPhaseDuration)} - ${_getPhaseName(currentPhase)}',
                 style: TextStyle(color: Colors.blue)),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             SizedBox(
-              width: 250,
-              height: 220,
+              width: 200,
+              height: 200,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -184,7 +196,7 @@ class _TimerPageState extends State<TimerPage> {
                       child: CircularProgressIndicator(
                         value: (currentPhaseDuration - remainingSeconds) /
                             currentPhaseDuration,
-                        strokeWidth: 10,
+                        strokeWidth: 16,
                         backgroundColor: Colors.grey[200],
                         valueColor:
                             const AlwaysStoppedAnimation<Color>(Colors.blue),
@@ -196,7 +208,7 @@ class _TimerPageState extends State<TimerPage> {
                     child: Text(
                       _formatTime(remainingSeconds),
                       style: const TextStyle(
-                        fontSize: 35,
+                        fontSize: 36,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -204,7 +216,7 @@ class _TimerPageState extends State<TimerPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -231,15 +243,47 @@ class _TimerPageState extends State<TimerPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                    'Start Time: ${startTime != null ? DateFormat('h:mm:ss ').format(startTime!) : '--'}'),
-                Text(
-                    'End Time: ${endTime != null ? DateFormat('h:mm:ss ').format(endTime!) : '--'}'),
-              ],
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.play_circle_outline, color: Colors.blue, size: 20),
+                      const SizedBox(width: 6),
+                      Text(
+                        startTime != null
+                            ? DateFormat('HH:mm a').format(startTime!)
+                            : '--:--',
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    height: 24,
+                    width: 1,
+                    color: Colors.grey.shade300,
+                  ),
+                  Row(
+                    children: [
+                      const Icon(Icons.stop_circle_outlined, color: Colors.red, size: 20),
+                      const SizedBox(width: 6),
+                      Text(
+                        endTime != null
+                            ? DateFormat('HH:mm a').format(endTime!)
+                            : '--:--',
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
