@@ -166,19 +166,18 @@ class _TimerPageState extends State<TimerPage> {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
             Text('Session $sessionCount',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-            const SizedBox(height: 10),
             Text(
                 '${_formatTime(currentPhaseDuration)} - ${_getPhaseName(currentPhase)}',
                 style: TextStyle(color: Colors.blue)),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             SizedBox(
-              width: 250,
-              height: 220,
+              width: 200,
+              height: 200,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -190,7 +189,7 @@ class _TimerPageState extends State<TimerPage> {
                       child: CircularProgressIndicator(
                         value: (currentPhaseDuration - remainingSeconds) /
                             currentPhaseDuration,
-                        strokeWidth: 10,
+                        strokeWidth: 16,
                         backgroundColor: Colors.grey[200],
                         valueColor:
                             const AlwaysStoppedAnimation<Color>(Colors.blue),
@@ -202,7 +201,7 @@ class _TimerPageState extends State<TimerPage> {
                     child: Text(
                       _formatTime(remainingSeconds),
                       style: const TextStyle(
-                        fontSize: 35,
+                        fontSize: 36,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -210,7 +209,7 @@ class _TimerPageState extends State<TimerPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
