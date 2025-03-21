@@ -1,9 +1,5 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 
 enum Phase { focus, shortBreak, longBreak }
@@ -147,12 +143,20 @@ class _TimerPageState extends State<TimerPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Flow State Tracker',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
-          _buildTimerSection(),
-          const SizedBox(height: 30),
-          _buildPriorityTasks(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const Text('Flow State Tracker',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  _buildTimerSection(),
+                  const SizedBox(height: 30),
+                  _buildPriorityTasks(),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -181,8 +185,8 @@ class _TimerPageState extends State<TimerPage> {
                   Padding(
                     padding: const EdgeInsets.all(5.0),
                     child: SizedBox(
-                      width: 170, // Adjust the width to increase the size
-                      height: 170, // Adjust the height to increase the size
+                      width: 170,
+                      height: 170,
                       child: CircularProgressIndicator(
                         value: (currentPhaseDuration - remainingSeconds) /
                             currentPhaseDuration,
