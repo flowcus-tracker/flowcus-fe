@@ -70,9 +70,9 @@ jobs:
           git fetch --tags
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "none")
           if [ "$LAST_TAG" = "none" ]; then
-            echo "changelog=$(git log --pretty=format:'%h - %s (%an)' -10)" >> $GITHUB_OUTPUT
+            echo "changelog=$(git log --pretty=format:'%h - %s (%an)' -10 | sed 's/\"/\\\"/g')" >> $GITHUB_OUTPUT
           else
-            echo "changelog=$(git log $LAST_TAG..HEAD --pretty=format:'%h - %s (%an)')" >> $GITHUB_OUTPUT
+            echo "changelog=$(git log $LAST_TAG..HEAD --pretty=format:'%h - %s (%an)' | sed 's/\"/\\\"/g')" >> $GITHUB_OUTPUT
           fi
       
       # Create GitHub Release (only on push to main, not on PR)
