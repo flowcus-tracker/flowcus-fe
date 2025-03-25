@@ -8,7 +8,7 @@ class CalendarPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Syncfusion Calendar Example'),
+        title: Center(child: Text('Calendar')),
       ),
       body: SfCalendar(
         view: CalendarView.month,

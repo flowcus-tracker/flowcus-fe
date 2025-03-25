@@ -66,15 +66,20 @@ class _TimerPageState extends State<TimerPage> {
             sessionCount++;
           }
         });
+      } else {
+        setState(() {
+          startTime = DateTime.now();
+          endTime = null;
+        });
       }
 
-      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      timer = Timer.periodic(const Duration(seconds: 1), (t) {
         if (remainingSeconds > 0) {
           setState(() {
             remainingSeconds--;
           });
         } else {
-          timer.cancel();
+          timer?.cancel();
           DateTime now = DateTime.now();
           setState(() {
             isTimerRunning = false;
@@ -145,9 +150,7 @@ class _TimerPageState extends State<TimerPage> {
         title: const Text('Flow State Tracker'),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 18.0
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -255,7 +258,8 @@ class _TimerPageState extends State<TimerPage> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.play_circle_outline, color: Colors.blue, size: 20),
+                      const Icon(Icons.play_circle_outline,
+                          color: Colors.blue, size: 20),
                       const SizedBox(width: 6),
                       Text(
                         startTime != null
@@ -272,7 +276,8 @@ class _TimerPageState extends State<TimerPage> {
                   ),
                   Row(
                     children: [
-                      const Icon(Icons.stop_circle_outlined, color: Colors.red, size: 20),
+                      const Icon(Icons.stop_circle_outlined,
+                          color: Colors.red, size: 20),
                       const SizedBox(width: 6),
                       Text(
                         endTime != null
