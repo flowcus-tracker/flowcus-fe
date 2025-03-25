@@ -28,7 +28,7 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history for proper versioning
 
-      # Sets up java 11
+      # Sets up java 17
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
