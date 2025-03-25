@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'task_provider.dart'; // Ensure this import is correct
 
 enum Phase { focus, shortBreak, longBreak }
 
@@ -64,15 +66,20 @@ class _TimerPageState extends State<TimerPage> {
             sessionCount++;
           }
         });
+      } else {
+        setState(() {
+          startTime = DateTime.now();
+          endTime = null;
+        });
       }
 
-      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      timer = Timer.periodic(const Duration(seconds: 1), (t) {
         if (remainingSeconds > 0) {
           setState(() {
             remainingSeconds--;
           });
         } else {
-          timer.cancel();
+          timer?.cancel();
           DateTime now = DateTime.now();
           setState(() {
             isTimerRunning = false;
@@ -143,9 +150,7 @@ class _TimerPageState extends State<TimerPage> {
         title: const Text('Flow State Tracker'),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 24.0
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -156,7 +161,7 @@ class _TimerPageState extends State<TimerPage> {
                     const SizedBox(height: 14),
                     _buildTimerSection(),
                     const SizedBox(height: 30),
-                    _buildPriorityTasks(),
+                    _buildPriorityTasks(context),
                   ],
                 ),
               ),
@@ -253,7 +258,8 @@ class _TimerPageState extends State<TimerPage> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.play_circle_outline, color: Colors.blue, size: 20),
+                      const Icon(Icons.play_circle_outline,
+                          color: Colors.blue, size: 20),
                       const SizedBox(width: 6),
                       Text(
                         startTime != null
@@ -270,7 +276,8 @@ class _TimerPageState extends State<TimerPage> {
                   ),
                   Row(
                     children: [
-                      const Icon(Icons.stop_circle_outlined, color: Colors.red, size: 20),
+                      const Icon(Icons.stop_circle_outlined,
+                          color: Colors.red, size: 20),
                       const SizedBox(width: 6),
                       Text(
                         endTime != null
@@ -313,7 +320,9 @@ class _TimerPageState extends State<TimerPage> {
     );
   }
 
-  Widget _buildPriorityTasks() {
+  Widget _buildPriorityTasks(BuildContext context) {
+    final taskProvider = Provider.of<TaskProvider>(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -322,11 +331,10 @@ class _TimerPageState extends State<TimerPage> {
         const SizedBox(height: 10),
         ListView.separated(
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: 3,
+          itemCount: taskProvider.tasks.length,
           separatorBuilder: (context, index) => const Divider(),
           itemBuilder: (context, index) => CheckboxListTile(
-            title: Text('Task ${index + 1}'),
+            title: Text(taskProvider.tasks[index]), // Use actual task text
             value: false,
             onChanged: (value) {},
           ),
