@@ -1,0 +1,2 @@
+C:/Users/User/Desktop/flowcus-fe/android/app/.cxx/Debug/471p1p11/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/User/Desktop/flowcus-fe/android/app/.cxx/Debug/471p1p11/armeabi-v7a/CMakeFiles/rebuild_cache.dir
