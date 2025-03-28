@@ -6,7 +6,8 @@ class TaskProvider extends ChangeNotifier {
 
   List<String> get tasks => _tasks;
 
-  void addTask(String task) {
+  addTask(String task) {
+    if (tasks.isEmpty) return Placeholder(child: Text('No task added yet'));
     _tasks.add(task);
     notifyListeners();
   }
