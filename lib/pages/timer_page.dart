@@ -11,6 +11,7 @@ class TimerPage extends StatefulWidget {
   const TimerPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _TimerPageState createState() => _TimerPageState();
 }
 
